@@ -7,7 +7,7 @@
 #include "queue.h"
 
 /* Notice: sometimes, Cppcheck would find the potential NULL pointer bugs,
- * but some of them cannot occur. You can suppress them by adding the
+ *but some of them cannot occur. You can suppress them by adding the
  * following line.
  *   cppcheck-suppress nullPointer
  */
@@ -16,7 +16,11 @@
 /* Create an empty queue */
 struct list_head *q_new()
 {
-    return NULL;
+    struct list_head *head = malloc(sizeof(struct list_head));
+    if (!head)
+        return NULL;
+    INIT_LIST_HEAD(head);
+    return head;
 }
 
 /* Free all storage used by queue */
