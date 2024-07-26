@@ -23,12 +23,13 @@ element_t *new_element(const char *str)
     element_t *new_e = malloc(sizeof(element_t));
     if (!new_e)
         return NULL;
-    new_e->value = malloc(sizeof(char) * (strlen(str) + 1));
+    int len = strlen(str);
+    new_e->value = malloc(sizeof(char) * (len + 1));
     if (!(new_e->value)) {
         free(new_e);
         return NULL;
     }
-    strcpy(new_e->value, str);
+    strlcpy(new_e->value, str, len + 1);
     return new_e;
 }
 
@@ -67,8 +68,15 @@ bool q_insert_head(struct list_head *head, char *s)
 }
 
 /* Insert an element at tail of queue */
+// cppcheck-suppress constParameterPointer
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    element_t *e = new_element(s);
+    if (!e)
+        return false;
+    list_add_tail(&e->list, head);
     return true;
 }
 
