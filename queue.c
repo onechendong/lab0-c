@@ -1,8 +1,11 @@
 
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include "list.h"
 
 #include "queue.h"
 
@@ -12,7 +15,22 @@
  *   cppcheck-suppress nullPointer
  */
 
-
+/* Create a new element */
+element_t *new_element(const char *str)
+{
+    if (!str)
+        return NULL;
+    element_t *new_e = malloc(sizeof(element_t));
+    if (!new_e)
+        return NULL;
+    new_e->value = malloc(sizeof(char) * (strlen(str) + 1));
+    if (!(new_e->value)) {
+        free(new_e);
+        return NULL;
+    }
+    strcpy(new_e->value, str);
+    return new_e;
+}
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -36,8 +54,15 @@ void q_free(struct list_head *head)
 }
 
 /* Insert an element at head of queue */
+// cppcheck-suppress constParameterPointer
 bool q_insert_head(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    element_t *e = new_element(s);
+    if (!e)
+        return false;
+    list_add(&e->list, head);
     return true;
 }
 
