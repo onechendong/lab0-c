@@ -1,13 +1,9 @@
-
-
-#include <locale.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include "list.h"
 
+#include "list.h"
 #include "queue.h"
 
 /* Notice: sometimes, Cppcheck would find the potential NULL pointer bugs,
@@ -140,10 +136,38 @@ bool q_delete_mid(struct list_head *head)
 }
 
 /* Delete all nodes that have duplicate string */
+// cppcheck-suppress constParameterPointer
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
-
+    if (!head || list_empty(head))
+        return false;
+    if (list_is_singular(head))
+        return true;
+    // Consider the situation where elements of queue have not been sorted.
+    bool del = false;
+    element_t *first, *first_safe, *second, *second_safe;
+    list_for_each_entry_safe (first, first_safe, head, list) {
+        for (second = list_entry(first->list.next, element_t, list),
+            second_safe = list_entry(second->list.next, element_t, list);
+             &second->list != head; second = second_safe,
+            second_safe = list_entry(second_safe->list.next, element_t, list)) {
+            if (!strcmp(first->value, second->value)) {
+                if (first_safe == second) {
+                    first_safe =
+                        list_entry(first_safe->list.next, element_t, list);
+                }
+                list_del(&second->list);
+                q_release_element(second);
+                del = true;
+            }
+        }
+        if (del) {
+            list_del(&first->list);
+            q_release_element(first);
+            del = false;
+        }
+    }
     return true;
 }
 
