@@ -143,13 +143,28 @@ bool q_delete_mid(struct list_head *head)
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+
     return true;
 }
 
 /* Swap every two adjacent nodes */
 void q_swap(struct list_head *head)
 {
+    if (list_empty(head))
+        return;
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    struct list_head *interater;
+    for (interater = head->next; interater->next != head;
+         interater = interater->next) {
+        struct list_head *first = interater, *second = interater->next;
+        // swap
+        first->next = second->next;
+        second->prev = first->prev;
+        first->prev = second;
+        second->next = first;
+        first->next->prev = first;
+        second->prev->next = second;
+    }
 }
 
 /* Reverse elements in queue */
