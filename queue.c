@@ -1,5 +1,6 @@
 
 
+#include <locale.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,22 +123,19 @@ int q_size(struct list_head *head)
 /* Delete the middle node in queue */
 bool q_delete_mid(struct list_head *head)
 {
+    // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
     if (!head || list_empty(head))
         return false;
-    struct list_head *tmp;
-    int num_of_element = 0;
-    list_for_each (tmp, head) {
-        num_of_element++;
-    }
 
-    struct list_head *cur = head->next;
-    int mid_ele_index = num_of_element / 2;
-    while (mid_ele_index) {
-        cur = cur->next;
-        mid_ele_index--;
+    struct list_head *front, *back;
+    for (front = head->next, back = head->prev; front != back;
+         back = back->prev) {
+        front = front->next;
+        if (front == back)
+            break;
     }
-    list_del(cur);
-    q_release_element(list_entry(cur, element_t, list));
+    list_del(front);
+    q_release_element(list_entry(front, element_t, list));
     return true;
 }
 
