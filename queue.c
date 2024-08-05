@@ -178,7 +178,7 @@ void q_swap(struct list_head *head)
         return;
     // https://leetcode.com/problems/swap-nodes-in-pairs/
     struct list_head *interater;
-    for (interater = head->next; interater->next != head;
+    for (interater = head->next; interater->next != head && interater != head;
          interater = interater->next) {
         struct list_head *first = interater, *second = interater->next;
         // swap
