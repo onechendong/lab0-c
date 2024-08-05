@@ -209,8 +209,83 @@ void q_reverseK(struct list_head *head, int k)
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
 }
 
+struct list_head *MergeTwo(struct list_head *left,
+                           struct list_head *right,
+                           bool descend)
+{
+    struct list_head new_head;
+    struct list_head *tail = &new_head;
+    if (!left && !right)
+        return NULL;
+    while (left && right) {
+        if (descend) {
+            if (strcmp(list_entry(left, element_t, list)->value,
+                       list_entry(right, element_t, list)->value) >= 0) {
+                tail->next = left;
+                left = left->next;
+                tail = tail->next;
+            } else {
+                tail->next = right;
+                right = right->next;
+                tail = tail->next;
+            }
+        } else {
+            if (strcmp(list_entry(left, element_t, list)->value,
+                       list_entry(right, element_t, list)->value) <= 0) {
+                tail->next = left;
+                left = left->next;
+                tail = tail->next;
+            } else {
+                tail->next = right;
+                right = right->next;
+                tail = tail->next;
+            }
+        }
+    }
+
+    if (left)
+        tail->next = left;
+    else if (right)
+        tail->next = right;
+    return new_head.next;
+}
+
+struct list_head *MergeSort(struct list_head *head, bool descend)
+{
+    if (!head->next)
+        return head;
+
+    struct list_head *fast, *slow;
+    for (fast = head, slow = head; fast && fast->next;
+         fast = fast->next->next, slow = slow->next)
+        ;
+    struct list_head *mid = slow;
+    mid->prev->next = NULL;
+    struct list_head *left = MergeSort(head, descend);
+    struct list_head *right = MergeSort(mid, descend);
+
+    return MergeTwo(left, right, descend);
+}
+
 /* Sort elements of queue in ascending/descending order */
-void q_sort(struct list_head *head, bool descend) {}
+void q_sort(struct list_head *head, bool descend)
+{
+    if (!head || list_is_singular(head) || list_empty(head))
+        return;
+
+    head->prev->next = NULL;
+    head->next = MergeSort(head->next, descend);
+
+    struct list_head *front = head, *cur = head->next;
+    while (cur) {
+        cur->prev = front;
+        // front = cur;
+        cur = cur->next;
+        front = front->next;
+    }
+    front->next = head;
+    head->prev = front;
+}
 
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
