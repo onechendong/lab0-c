@@ -144,25 +144,16 @@ bool q_delete_dup(struct list_head *head)
         return false;
     if (list_is_singular(head))
         return true;
-    // Consider the situation where elements of queue have not been sorted.
+
     bool del = false;
-    element_t *first, *first_safe, *second, *second_safe;
+    element_t *first, *first_safe;
     list_for_each_entry_safe (first, first_safe, head, list) {
-        for (second = list_entry(first->list.next, element_t, list),
-            second_safe = list_entry(second->list.next, element_t, list);
-             &second->list != head; second = second_safe,
-            second_safe = list_entry(second_safe->list.next, element_t, list)) {
-            if (!strcmp(first->value, second->value)) {
-                if (first_safe == second) {
-                    first_safe =
-                        list_entry(first_safe->list.next, element_t, list);
-                }
-                list_del(&second->list);
-                q_release_element(second);
-                del = true;
-            }
-        }
-        if (del) {
+        if (&first_safe->list != head &&
+            !strcmp(first->value, first_safe->value)) {
+            list_del(&first->list);
+            q_release_element(first);
+            del = true;
+        } else if (del) {
             list_del(&first->list);
             q_release_element(first);
             del = false;
