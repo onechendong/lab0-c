@@ -168,10 +168,10 @@ void q_swap(struct list_head *head)
     if (list_empty(head))
         return;
     // https://leetcode.com/problems/swap-nodes-in-pairs/
-    struct list_head *interater;
-    for (interater = head->next; interater->next != head && interater != head;
-         interater = interater->next) {
-        struct list_head *first = interater, *second = interater->next;
+    struct list_head *interator;
+    for (interator = head->next; interator->next != head && interator != head;
+         interator = interator->next) {
+        struct list_head *first = interator, *second = interator->next;
         // swap
         first->next = second->next;
         second->prev = first->prev;
